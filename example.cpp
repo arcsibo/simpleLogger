@@ -10,10 +10,8 @@ int foobar()
 	if(foo < 3)
 	{
 		//ERRORLOGGING << fmt::format("{} {}", __INFO__, "something went wrong");
-		ERRORLOGGING << "kecske sajt";
+		ERRORLOGGING << "Fatal error";
 	}
-
-	
 }
 
 int main()
