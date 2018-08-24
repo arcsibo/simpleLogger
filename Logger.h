@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <fstream>
-//#include "fmt/include/fmt/format.h"
 #include <chrono>
 #include <ctime>
 #include <sstream> 
@@ -11,24 +10,15 @@
 #include <algorithm>
 #include <mutex>
 
-
 #include <cstddef>
 #include <utility>
 #include <string>
 
-/// show function name filename and line:
-/// OpenFile (..\App\Src\OpenFile.cpp:30)
-//#define __INFO__ fmt::format("{} ({}:{})", std::string(__FUNCTION__), std::to_string(__FILE__), std::to_string(__LINE__))
-//#define __STD_FUNC__ (std::string(__func__))
-//#define __INFO__ (__FILE__ "::" __STD_FUNC__ "(..):" __LINE__)
-
 #define STRINGIZE_DETAIL(x) #x
 #define STRINGIZE(x) STRINGIZE_DETAIL(x)
 #define __INFO__ (__FILE__ ":" STRINGIZE(__LINE__))
-//#define __INFO__ (__FILE__ "::" __FUNCTION__ "(..):" STRINGIZE(__LINE__))
-
-
-//#define __INFO__ fmt::format("{} ({}:{})", std::string(__FUNCTION__), std::string(__FILE__), std::to_string(__LINE__))
+//#define __INFO_F__ (__FILE__ "::" ((const char *)__func__) ":" STRINGIZE(__LINE__))
+#define __INFO_M__(MSG) (__FILE__ ":" STRINGIZE(__LINE__) ":" MSG)
 
 /// actual time
 static std::string time2String()
@@ -57,12 +47,19 @@ public:
     void swap(Logging& other)             = delete;
     Logging(Logging const&)               = delete;
     Logging& operator=(Logging const&)    = delete;
+
+	/// logger config
+	/// @param type: what will be the tag, like [INFO]	
+	/// @param tostdout: if it true will show the messages in the stdout, false only logging.txt
 	Logging(std::string type, bool tostdout) : mType(type), mToStdout(tostdout){};
 protected:
 	Logging() = delete;
 	virtual ~Logging(){};
 
+	/// type of logging
 	std::string mType;
+
+	/// logging to stdout
 	bool mToStdout;
 
 public:
@@ -71,7 +68,6 @@ public:
 		if(mToStdout)
 			std::cout << mType << " " << str << "\n";
 
-		
 		std::lock_guard<std::mutex> guard(m);
 
 		std::string name = mConstLogFile;
@@ -124,6 +120,3 @@ ErrorLogging() : Logging("[ERROR]", true){};
 static InfoLogging		INFOLOGGING;
 static DebugLogging		DEBUGLOGGING;
 static ErrorLogging		ERRORLOGGING;
-
-
-#endif
